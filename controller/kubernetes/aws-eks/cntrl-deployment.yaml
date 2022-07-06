@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaccine-issuer
+  namespace: vaccine-issuer
+  labels:
+    app: vaccine-issuer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaccine-issuer
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: vaccine-issuer
+    spec:
+      containers:
+        - name: vaccine-issuer
+          image: 149875424875.dkr.ecr.af-south-1.amazonaws.com/vaccine-issuer:0.0.1
+          imagePullPolicy: Always
+          ports:
+            - name: server-port
+              containerPort: 8180
+              protocol: TCP
+            - name: agnt-adm-port
+              containerPort: 8001
+              protocol: TCP
+            - name: agnt-port
+              containerPort: 8000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: vaccine-issuer-configmap
