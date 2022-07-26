@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkvaccine_issuer=self.webpackChunkvaccine_issuer||[]).push([[254],{254:function(n,e,i){i.r(e);i(2791);var u=i(184);e.default=function(){return(0,u.jsx)("div",{children:"Can't find what you looking for! \ud83e\udd37\u200d\u2642\ufe0f"})}}}]);
+//# sourceMappingURL=254.ad668022.chunk.js.map
