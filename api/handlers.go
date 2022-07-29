@@ -476,8 +476,8 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 								Value: userInfo.IDNumber,
 							},
 							{
-								Name:  "Forenames",
-								Value: userInfo.Forenames,
+								Name:  "First Names",
+								Value: userInfo.FirstNames,
 							},
 							{
 								Name:  "Surname",
