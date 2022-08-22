@@ -2,7 +2,7 @@ package models
 
 type VaccineCredentialRequest struct {
 	IDNumber             string `json:"id_number"`
-	Forenames            string `json:"forenames"`
+	FirstNames           string `json:"first_names"`
 	Surname              string `json:"surname"`
 	DOB                  string `json:"date_of_birth"`
 	VaccineType          string `json:"vaccine_type"`
