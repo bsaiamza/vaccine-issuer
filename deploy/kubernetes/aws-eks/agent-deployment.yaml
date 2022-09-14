@@ -35,6 +35,17 @@ spec:
           envFrom:
             - configMapRef:
                 name: vaccine-issuer-agent-configmap
+          env:
+            - name: ACAPY_WALLET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: vaccineissuersecret
+                  key: acapywalletkey
+            - name: ACAPY_WALLET_STORAGE_CREDS
+              valueFrom:
+                secretKeyRef:
+                  name: vaccineissuersecret
+                  key: acapywalletstoragecred      
           command: [
               "/bin/bash",
               "-c",

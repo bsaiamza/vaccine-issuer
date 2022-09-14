@@ -38,3 +38,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: vaccine-issuer-configmap
+          env:
+            - name: EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: vaccineissuersecret
+                  key: emailpw
