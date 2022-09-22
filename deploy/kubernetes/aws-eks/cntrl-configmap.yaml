@@ -17,5 +17,3 @@ data:
   # CLIENT_URL: "http://vaccine-issuer-agent.vaccine-issuer.svc.cluster.local:3000" # socket
   # server variables
   SERVER_ADDRESS: 0.0.0.0:8180
-  EMAIL_USERNAME: aws_iamzanet@bankservafrica.com
-  EMAIL_PASSWORD: K5fEoXa88
