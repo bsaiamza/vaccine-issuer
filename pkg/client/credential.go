@@ -5,7 +5,7 @@ import (
 	"vaccine_issuer/pkg/models"
 )
 
-func (c *Client) ListCredentialRecords() (models.ListCredentialRecordsResponse, error) {
+func (c *Client) ListCredentialRecords(token string) (models.ListCredentialRecordsResponse, error) {
 	var credentialRecords models.ListCredentialRecordsResponse
 
 	arg := models.AcapyGetRequest{
@@ -13,7 +13,7 @@ func (c *Client) ListCredentialRecords() (models.ListCredentialRecordsResponse, 
 		Response: &credentialRecords,
 	}
 
-	err := c.get(arg)
+	err := c.get(arg, token)
 	if err != nil {
 		log.Error.Printf("Failed on ACA-py /issue-credential/records: %s", err.Error())
 		return models.ListCredentialRecordsResponse{}, err
@@ -21,7 +21,7 @@ func (c *Client) ListCredentialRecords() (models.ListCredentialRecordsResponse, 
 	return credentialRecords, nil
 }
 
-func (c *Client) IssueCredential(request models.IssueCredentialRequest) (models.IssueCredentialResponse, error) {
+func (c *Client) IssueCredential(token string, request models.IssueCredentialRequest) (models.IssueCredentialResponse, error) {
 	var credential models.IssueCredentialResponse
 
 	arg := models.AcapyPostRequest{
@@ -30,7 +30,7 @@ func (c *Client) IssueCredential(request models.IssueCredentialRequest) (models.
 		Response: &credential,
 	}
 
-	err := c.post(arg)
+	err := c.post(arg, token)
 	if err != nil {
 		log.Error.Printf("Failed on ACA-py /issue-credential/send: %s", err.Error())
 		return models.IssueCredentialResponse{}, err
@@ -38,7 +38,7 @@ func (c *Client) IssueCredential(request models.IssueCredentialRequest) (models.
 	return credential, nil
 }
 
-func (c *Client) CreateCredential(request models.CreateCredentialRequest) (models.IssueCredentialResponse, error) {
+func (c *Client) CreateCredential(token string, request models.CreateCredentialRequest) (models.IssueCredentialResponse, error) {
 	var credential models.IssueCredentialResponse
 
 	arg := models.AcapyPostRequest{
@@ -47,7 +47,7 @@ func (c *Client) CreateCredential(request models.CreateCredentialRequest) (model
 		Response: &credential,
 	}
 
-	err := c.post(arg)
+	err := c.post(arg, token)
 	if err != nil {
 		log.Error.Printf("Failed on ACA-py /issue-credential/create: %s", err.Error())
 		return models.IssueCredentialResponse{}, err

@@ -4,8 +4,7 @@ import (
 	"os"
 )
 
-type Config struct {
-}
+type Config struct{}
 
 func LoadConfig() *Config {
 	return &Config{}
@@ -37,6 +36,14 @@ func (c *Config) GetCredDefID() string {
 
 func (c *Config) GetPublicDID() string {
 	return getEnvVarByName("PUBLIC_DID")
+}
+
+func (c *Config) GetWalletKey() string {
+	return getEnvVarByName("WALLET_KEY")
+}
+
+func (c *Config) GetWalletID() string {
+	return getEnvVarByName("WALLET_ID")
 }
 
 func (c *Config) GetServerAddress() string {

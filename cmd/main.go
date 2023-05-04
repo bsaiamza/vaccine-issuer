@@ -24,9 +24,9 @@ func runServer() {
 		WithErrorLogger(log.ServerError)
 
 	go func() {
-		log.ServerInfo.Println("-----------------------------------------")
+		log.ServerInfo.Println("--------------------------------")
 		log.ServerInfo.Println("|		Vaccine Issuer		|")
-		log.ServerInfo.Println("-----------------------------------------")
+		log.ServerInfo.Println("--------------------------------")
 		log.ServerInfo.Println("")
 		log.ServerInfo.Printf("Server started on: %s", config.GetServerAddress())
 		if err := srv.Start(); err != nil {

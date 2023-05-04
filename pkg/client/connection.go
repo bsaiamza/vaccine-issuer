@@ -2,11 +2,12 @@ package client
 
 import (
 	"fmt"
+
 	"vaccine_issuer/pkg/log"
 	"vaccine_issuer/pkg/models"
 )
 
-func (c *Client) ListConnections() (models.ListConnectionsResponse, error) {
+func (c *Client) ListConnections(token string) (models.ListConnectionsResponse, error) {
 	queryParams := map[string]string{
 		"alias": "IAMZA Vaccine Issuer",
 		"state": "active",
@@ -19,7 +20,7 @@ func (c *Client) ListConnections() (models.ListConnectionsResponse, error) {
 		Response:    &connections,
 	}
 
-	err := c.get(arg)
+	err := c.get(arg, token)
 	if err != nil {
 		log.ServerError.Print("Failed on ACA-py /connections: ", err)
 		return models.ListConnectionsResponse{}, err
@@ -27,7 +28,7 @@ func (c *Client) ListConnections() (models.ListConnectionsResponse, error) {
 	return connections, nil
 }
 
-func (c *Client) CreateInvitation(request models.CreateInvitationRequest) (models.CreateInvitationResponse, error) {
+func (c *Client) CreateInvitation(request models.CreateInvitationRequest, token string) (models.CreateInvitationResponse, error) {
 	queryParams := map[string]string{
 		"alias": "IAMZA Vaccine Issuer",
 		// "public": "true",
@@ -41,7 +42,7 @@ func (c *Client) CreateInvitation(request models.CreateInvitationRequest) (model
 		Response:    &invitation,
 	}
 
-	err := c.post(arg)
+	err := c.post(arg, token)
 	if err != nil {
 		log.Error.Printf("Failed on ACA-py /connections/create-invitation: %s", err.Error())
 		return models.CreateInvitationResponse{}, err
@@ -49,7 +50,7 @@ func (c *Client) CreateInvitation(request models.CreateInvitationRequest) (model
 	return invitation, nil
 }
 
-func (c *Client) PingConnection(connectionID string, request models.PingConnectionRequest) (models.PingConnectionResponse, error) {
+func (c *Client) PingConnection(connectionID, token string, request models.PingConnectionRequest) (models.PingConnectionResponse, error) {
 	endpoint := fmt.Sprintf("/connections/%s/send-ping", connectionID)
 	var thread models.PingConnectionResponse
 
@@ -59,7 +60,7 @@ func (c *Client) PingConnection(connectionID string, request models.PingConnecti
 		Response: &thread,
 	}
 
-	err := c.post(arg)
+	err := c.post(arg, token)
 	if err != nil {
 		log.Error.Printf("Failed on ACA-py /connections/{conn_id}/send-ping: %s", err.Error())
 		return models.PingConnectionResponse{}, err
@@ -69,7 +70,7 @@ func (c *Client) PingConnection(connectionID string, request models.PingConnecti
 
 // NEW
 
-func (c *Client) GetConnection(connID string) (models.Connection, error) {
+func (c *Client) GetConnection(connID, token string) (models.Connection, error) {
 	endpoint := fmt.Sprintf("/connections/%s", connID)
 	var connection models.Connection
 
@@ -78,7 +79,7 @@ func (c *Client) GetConnection(connID string) (models.Connection, error) {
 		Response: &connection,
 	}
 
-	err := c.get(arg)
+	err := c.get(arg, token)
 	if err != nil {
 		log.Error.Printf("Failed on ACA-py /connections/{conn_id}: %s", err.Error())
 		return models.Connection{}, err

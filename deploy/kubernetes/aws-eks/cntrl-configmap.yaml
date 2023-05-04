@@ -7,11 +7,11 @@ metadata:
 data:
   # acapy variables
   ACAPY_URL: "http://vaccine-issuer-agent.vaccine-issuer.svc.cluster.local:8001" # socket - ?
-  SCHEMA_ID: "CiW8u785VTBW1S9AsPXGXi:2:Vaccine_Credential:3.1"
+  SCHEMA_ID: "EosRZ6aKyEgWVQqQyza8w:2:Vaccine_Credential:1.2"
   SCHEMA_NAME: "Vaccine_Credential"
-  SCHEMA_VERSION: "3.1"
-  CRED_DEF_ID: "CiW8u785VTBW1S9AsPXGXi:3:CL:52287:IAMZA Vaccine Credential"
-  PUBLIC_DID: "CiW8u785VTBW1S9AsPXGXi"
+  SCHEMA_VERSION: "1.2"
+  CRED_DEF_ID: "EosRZ6aKyEgWVQqQyza8w:3:CL:42474:Vaccine Credential 1.2"
+  PUBLIC_DID: "EosRZ6aKyEgWVQqQyza8w"
   # ACAPY_ADMIN_API_KEY: secret
   # client variables
   # CLIENT_URL: "http://vaccine-issuer-agent.vaccine-issuer.svc.cluster.local:3000" # socket

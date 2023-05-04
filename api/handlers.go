@@ -23,6 +23,7 @@ func health(config *config.Config) http.HandlerFunc {
 
 	return server.ChainMiddleware(healthHandler(config), mdw...)
 }
+
 func healthHandler(config *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -37,6 +38,7 @@ func listConnections(config *config.Config, client *client.Client) http.HandlerF
 
 	return server.ChainMiddleware(listConnectionsHandler(config, client), mdw...)
 }
+
 func listConnectionsHandler(config *config.Config, client *client.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		header := w.Header()
@@ -64,7 +66,23 @@ func listConnectionsHandler(config *config.Config, client *client.Client) http.H
 
 		log.Info.Println("Listing connections...")
 
-		connections, err := client.ListConnections()
+		arg := models.GetTokenRequest{
+			WalletKey: config.GetWalletKey(),
+		}
+
+		wallet, err := client.GetToken(config.GetWalletID(), arg)
+		if err != nil {
+			log.Error.Printf("Failed to get token: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Response{
+				"success": false,
+				"msg":     "Failed to get token: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
+		connections, err := client.ListConnections(wallet.Token)
 		if err != nil {
 			log.Error.Printf("Failed to list connections: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -90,6 +108,7 @@ func listCredentials(config *config.Config, client *client.Client) http.HandlerF
 
 	return server.ChainMiddleware(listCredentialsHandler(config, client), mdw...)
 }
+
 func listCredentialsHandler(config *config.Config, client *client.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		header := w.Header()
@@ -117,7 +136,23 @@ func listCredentialsHandler(config *config.Config, client *client.Client) http.H
 
 		log.Info.Println("Listing credentials records...")
 
-		records, err := client.ListCredentialRecords()
+		arg := models.GetTokenRequest{
+			WalletKey: config.GetWalletKey(),
+		}
+
+		wallet, err := client.GetToken(config.GetWalletID(), arg)
+		if err != nil {
+			log.Error.Printf("Failed to get token: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Response{
+				"success": false,
+				"msg":     "Failed to get token: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
+		records, err := client.ListCredentialRecords(wallet.Token)
 		if err != nil {
 			log.Error.Printf("Failed to list credential records: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -143,6 +178,7 @@ func getCredential(config *config.Config, client *client.Client, cache *utils.Bi
 
 	return server.ChainMiddleware(getCredentialHandler(config, client, cache), mdw...)
 }
+
 func getCredentialHandler(config *config.Config, client *client.Client, cache *utils.BigCache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		header := w.Header()
@@ -201,9 +237,25 @@ func getCredentialHandler(config *config.Config, client *client.Client, cache *u
 		log.Info.Println("ID Validation passed")
 
 		// Step 3: Create Invitation
+		arg := models.GetTokenRequest{
+			WalletKey: config.GetWalletKey(),
+		}
+
+		wallet, err := client.GetToken(config.GetWalletID(), arg)
+		if err != nil {
+			log.Error.Printf("Failed to get token: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Response{
+				"success": false,
+				"msg":     "Failed to get token: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
 		invitationRequest := models.CreateInvitationRequest{}
 
-		invitation, err := client.CreateInvitation(invitationRequest)
+		invitation, err := client.CreateInvitation(invitationRequest, wallet.Token)
 		if err != nil {
 			log.Error.Printf("Failed to create invitation: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -244,6 +296,7 @@ func getCredentialByEmail(config *config.Config, client *client.Client, cache *u
 
 	return server.ChainMiddleware(getCredentialByEmailHandler(config, client, cache), mdw...)
 }
+
 func getCredentialByEmailHandler(config *config.Config, client *client.Client, cache *utils.BigCache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		header := w.Header()
@@ -315,9 +368,25 @@ func getCredentialByEmailHandler(config *config.Config, client *client.Client, c
 		log.Info.Println("ID Validation passed")
 
 		// Step 4: Create Invitation
+		arg := models.GetTokenRequest{
+			WalletKey: config.GetWalletKey(),
+		}
+
+		wallet, err := client.GetToken(config.GetWalletID(), arg)
+		if err != nil {
+			log.Error.Printf("Failed to get token: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			res := server.Response{
+				"success": false,
+				"msg":     "Failed to get token: " + err.Error(),
+			}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
 		invitationRequest := models.CreateInvitationRequest{}
 
-		invitation, err := client.CreateInvitation(invitationRequest)
+		invitation, err := client.CreateInvitation(invitationRequest, wallet.Token)
 		if err != nil {
 			log.Error.Printf("Failed to create invitation: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -392,6 +461,7 @@ func webhookEvents(config *config.Config, client *client.Client, cache *utils.Bi
 
 	return server.ChainMiddleware(webhookEventsHandler(config, client, cache), mdw...)
 }
+
 func webhookEventsHandler(config *config.Config, client *client.Client, cache *utils.BigCache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		header := w.Header()
@@ -434,7 +504,18 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 					Comment: "Ping",
 				}
 
-				_, err := client.PingConnection(request.ConnectionID, pingRequest)
+				arg := models.GetTokenRequest{
+					WalletKey: config.GetWalletKey(),
+				}
+
+				wallet, err := client.GetToken(config.GetWalletID(), arg)
+				if err != nil {
+					log.Error.Printf("Failed to get token: %s", err)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+
+				_, err = client.PingConnection(request.ConnectionID, wallet.Token, pingRequest)
 				if err != nil {
 					log.Error.Printf("Failed to ping holder: %s", err)
 					w.WriteHeader(http.StatusInternalServerError)
@@ -472,54 +553,70 @@ func webhookEventsHandler(config *config.Config, client *client.Client, cache *u
 						Type: "issue-credential/1.0/credential-preview",
 						Attributes: []models.Attribute{
 							{
-								Name:  "ID Number",
+								Name:  "identity_number",
 								Value: userInfo.IDNumber,
 							},
 							{
-								Name:  "First Names",
+								Name:  "names",
 								Value: userInfo.FirstNames,
 							},
 							{
-								Name:  "Surname",
+								Name:  "surname",
 								Value: userInfo.Surname,
 							},
 							{
-								Name:  "Date of Birth",
+								Name:  "date_of_birth",
 								Value: userInfo.DOB,
 							},
 							{
-								Name:  "Vaccine Type",
+								Name:  "vaccine_type",
 								Value: userInfo.VaccineType,
 							},
 							{
-								Name:  "Vaccine Dose",
+								Name:  "vaccine_dose",
 								Value: userInfo.VaccineDose,
 							},
 							{
-								Name:  "Date of Vaccination",
+								Name:  "date_of_vaccination",
 								Value: userInfo.DateOfVaccination,
 							},
 							{
-								Name:  "Administering Centre",
+								Name:  "administering_centre",
 								Value: userInfo.AdministeringCentre,
 							},
 							{
-								Name:  "Country of Vaccination",
+								Name:  "country_of_vaccination",
 								Value: userInfo.CountryOfVaccination,
 							},
 							{
-								Name:  "Next Vaccination Date",
+								Name:  "next_vaccination_date",
 								Value: userInfo.NextVaccinationDate,
 							},
 							{
-								Name:  "Expiry Date",
+								Name:  "expiry_date",
 								Value: userInfo.ExpiryDate,
 							},
 						},
 					},
 				}
 
-				_, err = client.IssueCredential(credentialRequest)
+				arg := models.GetTokenRequest{
+					WalletKey: config.GetWalletKey(),
+				}
+
+				wallet, err := client.GetToken(config.GetWalletID(), arg)
+				if err != nil {
+					log.Error.Printf("Failed to get token: %s", err)
+					w.WriteHeader(http.StatusInternalServerError)
+					res := server.Response{
+						"success": false,
+						"msg":     "Failed to get token: " + err.Error(),
+					}
+					json.NewEncoder(w).Encode(res)
+					return
+				}
+
+				_, err = client.IssueCredential(wallet.Token, credentialRequest)
 				if err != nil {
 					log.Error.Printf("Failed to send credential offer: %s", err)
 					w.WriteHeader(http.StatusBadRequest)

@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: vaccine-issuer-agent
-          image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3
+          image: bcgovimages/aries-cloudagent:py36-1.16-1_0.8.1
           imagePullPolicy: Always
           ports:
             - name: agnt-admin-port
@@ -45,7 +45,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: vaccineissuersecret
-                  key: acapywalletstoragecred      
+                  key: acapywalletstoragecred
           command: [
               "/bin/bash",
               "-c",
@@ -53,6 +53,5 @@ spec:
               --admin '0.0.0.0' 8001 \
               --inbound-transport http '0.0.0.0' 8000 \
               --outbound-transport http \
-              --replace-public-did \
               --connections-invite",
             ]

@@ -37,7 +37,7 @@ func NewClient(acapyURL string) *Client {
 	}
 }
 
-func (c *Client) post(arg models.AcapyPostRequest) error {
+func (c *Client) post(arg models.AcapyPostRequest, token string) error {
 	requestArgs := models.AcapyRequest{
 		Method:         http.MethodPost,
 		URL:            c.acapyURL + arg.Endpoint,
@@ -46,10 +46,10 @@ func (c *Client) post(arg models.AcapyPostRequest) error {
 		ResponseObject: arg.Response,
 	}
 
-	return c.acapyRequest(requestArgs)
+	return c.acapyRequest(requestArgs, token)
 }
 
-func (c *Client) get(arg models.AcapyGetRequest) error {
+func (c *Client) get(arg models.AcapyGetRequest, token string) error {
 	requestArgs := models.AcapyRequest{
 		Method:         http.MethodGet,
 		URL:            c.acapyURL + arg.Endpoint,
@@ -57,10 +57,10 @@ func (c *Client) get(arg models.AcapyGetRequest) error {
 		ResponseObject: arg.Response,
 	}
 
-	return c.acapyRequest(requestArgs)
+	return c.acapyRequest(requestArgs, token)
 }
 
-func (c *Client) acapyRequest(arg models.AcapyRequest) error {
+func (c *Client) acapyRequest(arg models.AcapyRequest, token string) error {
 	input := inputReader(arg.Body)
 
 	request, err := http.NewRequest(arg.Method, arg.URL, input)
@@ -68,10 +68,21 @@ func (c *Client) acapyRequest(arg models.AcapyRequest) error {
 		return err
 	}
 
+	if token != "" {
+		request.Header.Add("Authorization", "Bearer "+token)
+	}
+
 	if c.apiKey != "" {
 		request.Header.Add("X-API-KEY", c.apiKey)
 	}
 	request.Header.Add("Content-Type", "application/json")
+
+	// fmt.Println("Request Headers:")
+	// for key, values := range request.Header {
+	// 	for _, value := range values {
+	// 		fmt.Printf("%s: %s\n", key, value)
+	// 	}
+	// }
 
 	q := request.URL.Query()
 	for k, v := range arg.QueryParams {
@@ -80,6 +91,9 @@ func (c *Client) acapyRequest(arg models.AcapyRequest) error {
 		}
 	}
 	request.URL.RawQuery = q.Encode()
+
+	// fmt.Println(arg.URL)
+	// fmt.Println("Token: ", token)
 
 	response, err := c.client.Do(request)
 	if err != nil || response.StatusCode >= 300 {
